@@ -61,7 +61,7 @@ class NetworkMonitor(object):
             rc = 500
 
         if rc == 200:
-            self.sleep_time += randint(1, self.sleep_time)
+            self.sleep_time += randint(1, self.sleep_time // 2)
             self.sleep_time = min(self.sleep_time, self.sleep_time_max)
         else:
             self.sleep_time = self.sleep_time_min
@@ -75,8 +75,8 @@ class App(QMainWindow):
         super().__init__()
         self.title = '哈工深校园网守护'
 
-        self.left = 360
-        self.top = 240
+        self.left = 1500
+        self.top = 600
         self.width = 300
         self.height = 350
         self.setFixedSize(self.width, self.height)
@@ -89,8 +89,6 @@ class App(QMainWindow):
         self.shortcut = QShortcut(QKeySequence("Ctrl+W"), self)
         self.shortcut.activated.connect(self.close)
 
-        # self.statusBar().showMessage('Copyright. Lmh, Github: bugstop.')
-
         self.table_widget = MyTableWidget(self)
         self.setCentralWidget(self.table_widget)
 
@@ -99,9 +97,8 @@ class App(QMainWindow):
         self.show()
 
     def closeEvent(self, event):
-        self.table_widget.label.setText('closed')  # stop countdown
-        event.accept()  # let the window close
-        # event.ignore()
+        self.table_widget.label.setText('closed')
+        event.accept()
 
 
 class MyTableWidget(QWidget):
@@ -122,13 +119,12 @@ class MyTableWidget(QWidget):
         self.tabs = QTabWidget()
         self.tab1 = QWidget()
         self.tab2 = QWidget()
-        # self.tabs.resize(300, 200)
         tab_font = QFont("Microsoft YaHei", 8, QFont.Normal)
         self.tabs.setFont(tab_font)
 
         # Add tabs
         self.tabs.addTab(self.tab1, "网络")
-        self.tabs.addTab(self.tab2, "账户")
+        self.tabs.addTab(self.tab2, "用户")
 
         self.set_tab_1()
         self.set_tab_2()
@@ -138,7 +134,6 @@ class MyTableWidget(QWidget):
         self.setLayout(self.layout)
 
     def set_tab_1(self):
-        # Create first tab
         f1 = QFont("Microsoft YaHei", 10, QFont.Light)
         f2 = QFont("Microsoft YaHei", 18, QFont.Normal)
         f3 = QFont("Consolas", 18, QFont.Light)
@@ -148,6 +143,7 @@ class MyTableWidget(QWidget):
         self.horizontalGroupBox1 = QGroupBox("网络状态")
         self.horizontalGroupBox1.setFont(f1)
         self.horizontalGroupBox1.setStyleSheet("padding: 15px; border: 1px solid lightgray; border-radius: 0")
+
         layout = QGridLayout()
         layout.setSpacing(10)
 
@@ -166,7 +162,6 @@ class MyTableWidget(QWidget):
         label3.setFont(f2)
         label3.setStyleSheet("padding: 0; border: 0; padding-right: 0;")
         label3.setAlignment(Qt.AlignLeft)
-
         layout.addWidget(label3, 2, 0, 1, 1)
         self.label4 = QLabel('尚未检测', self)
         self.label4.setFont(f2)
@@ -179,6 +174,7 @@ class MyTableWidget(QWidget):
         self.horizontalGroupBox3 = QGroupBox("检测间隔")
         self.horizontalGroupBox3.setFont(f1)
         self.horizontalGroupBox3.setStyleSheet("padding: 15px; border: 1px solid lightgray; border-radius: 0")
+
         cd = QGridLayout()
         cd.setSpacing(10)
 
@@ -188,7 +184,7 @@ class MyTableWidget(QWidget):
         label5.setStyleSheet("padding: 0; padding-top: 10px; border: 0")
         label5.setAlignment(Qt.AlignLeft)
         cd.addWidget(label5, 1, 0, 1, 1)
-        self.label6 = QLabel('0:20', self)
+        self.label6 = QLabel('0:00', self)
         self.label6.setAlignment(Qt.AlignLeft)
         self.label6.setFont(f3)
         self.label6.setStyleSheet("padding: 0; padding-top: 10px; border: 0")
@@ -201,7 +197,7 @@ class MyTableWidget(QWidget):
         label7.setStyleSheet("padding: 0; padding-top: 10px; border: 0")
         label7.setAlignment(Qt.AlignLeft)
         cd.addWidget(label7, 2, 0, 1, 1)
-        self.label = QLabel('0:25', self)
+        self.label = QLabel('0:00', self)
         self.label.setAlignment(Qt.AlignLeft)
         self.label.setFont(f3)
         self.label.setStyleSheet("padding: 0; padding-top: 10px; border: 0")
@@ -239,13 +235,13 @@ class MyTableWidget(QWidget):
                 self.label2.setText('已连接上')
                 self.label2.setStyleSheet("padding: 0; border: 0; padding-right: 0; color: green;")
             else:
-                self.label2.setText('没有连接')
+                self.label2.setText('失去连接')
                 self.label2.setStyleSheet("padding: 0; border: 0; padding-right: 0; color: red;")
             if ok2:
                 self.label4.setText('已连接上')
                 self.label4.setStyleSheet("padding: 0; border: 0; padding-right: 0; color: green;")
             else:
-                self.label4.setText('没有连接')
+                self.label4.setText('失去连接')
                 self.label4.setStyleSheet("padding: 0; border: 0; padding-right: 0; color: red;")
 
             if not ok1 and ok2 and not daemon.connection_test():
@@ -257,7 +253,6 @@ class MyTableWidget(QWidget):
             t.start()
 
     def set_tab_2(self):
-        # Create first tab
         f1 = QFont("Microsoft YaHei", 10, QFont.Light)
         f2 = QFont("Microsoft YaHei", 18, QFont.Normal)
         f3 = QFont("Consolas", 15, QFont.Light)
@@ -292,7 +287,7 @@ class MyTableWidget(QWidget):
         info1.setAlignment(Qt.AlignLeft)
         copy.addWidget(info1, 1, 0, 1, 1)
 
-        info2 = QLabel('<a href="https://github.com/bugstop/schedule-shutdown-gui" '
+        info2 = QLabel('<a href="https://github.com/bugstop/hitsz-network-daemon" '
                        'style="color: black !important; text-decoration: none">bugstop</a>', self)
         info2.setFont(f3)
         info2.setStyleSheet("padding: 0; border: 0; padding-right: 0;")
@@ -341,7 +336,7 @@ class MyTableWidget(QWidget):
     @pyqtSlot()
     def update_user_info(self):
         while True:
-            username_d, ok = QInputDialog().getText(QWidget(), '用户绑定', '输入账号：')
+            username_d, ok = QInputDialog().getText(QWidget(), '账号绑定', '输入账号：')
             if ok:
                 self.username = username_d
                 break
@@ -351,7 +346,7 @@ class MyTableWidget(QWidget):
                 exit(0)
 
         while True:
-            password_d, ok = QInputDialog().getText(QWidget(), '用户绑定', '输入密码：')
+            password_d, ok = QInputDialog().getText(QWidget(), '账号绑定', '输入密码：')
             if ok:
                 self.password = password_d
                 break
